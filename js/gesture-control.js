@@ -3,7 +3,7 @@
  */
 
 //var fingers = 0;
-
+var startScale, startRotation;
 $.fn.extend({
 	gestures: function() { 
 		this.fingers = 0;
@@ -18,7 +18,6 @@ $.fn.extend({
 	 	.on('touchend', function(e) {
 
 	 		if ( e.originalEvent.targetTouches.length == 0 ) {
-	 			
 
 	 			
 	 			switch ( this.touches.length ) {
@@ -43,6 +42,22 @@ $.fn.extend({
 					if (window.CustomEvent) {
 						tap = document.createEvent('CustomEvent');
 						tap.initCustomEvent("tapThreeFingers", true, true, {touches: this.touches});
+						this.dispatchEvent(tap);
+					}
+					break;
+				// Four Fingers	
+	 			case 4:
+					if (window.CustomEvent) {
+						tap = document.createEvent('CustomEvent');
+						tap.initCustomEvent("tapFourFingers", true, true, {touches: this.touches});
+						this.dispatchEvent(tap);
+					}
+					break;
+				// Five Fingers	
+	 			case 5:
+					if (window.CustomEvent) {
+						tap = document.createEvent('CustomEvent');
+						tap.initCustomEvent("tapFiveFingers", true, true, {touches: this.touches});
 						this.dispatchEvent(tap);
 					}
 					break;
@@ -117,8 +132,41 @@ $.fn.extend({
 
 			e.preventDefault();
 	 			
-	 	}).on('contextmenu', function(e){
+	 	})
+	 	.on('contextmenu', function(e){
 	 		e.preventDefault();
+	 	})
+	 	.on('gesturechange', function( e ) {
+	 		var rotation = e.originalEvent.rotation;
+	 		var scale = e.originalEvent.scale;
+	 		e.preventDefault();	 		
+	 	})
+	 	.on('gesturestart', function( e ) {
+	 		startScale = e.originalEvent.scale;
+	 		startRotation = e.originalEvent.rotation;
+			e.preventDefault();
+	 	})
+	 	.on('gestureend', function( e ) {
+	 		var rotation = e.originalEvent.rotation;
+	 		var scale = e.originalEvent.scale;
+	 		e.preventDefault();
+
+	 		if (window.CustomEvent) {
+	 			if ( rotation != startRotation && ( rotation > startRotation && (rotation - 25) > startRotation ) || ( rotation + 25 < startRotation) ) {
+					rotate = document.createEvent('CustomEvent');
+					rotate.initCustomEvent("rotate", true, true, {rotation: rotation});
+					this.dispatchEvent(rotate);
+
+				} else if ( scale > startScale ) {
+					spread = document.createEvent('CustomEvent');
+					spread.initCustomEvent("spread", true, true, {scale: scale});
+					this.dispatchEvent(spread);
+				} else if ( scale < startScale ) {
+					pinch = document.createEvent('CustomEvent');
+					pinch.initCustomEvent("pinch", true, true, {scale: scale});
+					this.dispatchEvent(pinch);
+				}
+	 		}
 	 	});
 
 
@@ -126,20 +174,4 @@ $.fn.extend({
 	}
 });
 
- // *PING!* The DOM is ready
- $(function(){
 
-	$('body')
-		.gestures()
-		.on('tapOneFinger', function(e) {
-			alert('One Finger!');
-		})
-		.on('tapTwoFingers', function(e) {
-			var touches = e.originalEvent.detail.touches;
-			alert('Two Fingers!');
-		})
-		.on('tapThreeFingers', function(e) {
-			alert('Three Fingers!');
-		});
-
- });

@@ -4,15 +4,99 @@
 		<title>Gesture Control Playground</title>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 		<script src="js/gesture-control.js"></script>
+		<script>
+		 // *PING!* The DOM is ready
+		 $(function(){
 
+			$('body')
+				.gestures()
+				.on('tapOneFinger', function(e) {
+					var touches = e.originalEvent.detail.touches;
+					gesture_text('One Finger!');
+
+					gesture_target(touches);
+				})
+				/*.on('tapTwoFingers', function(e) {
+					var touches = e.originalEvent.detail.touches;
+					gesture_text('Two Fingers!');
+					gesture_target(touches);
+				})*/
+				.on('tapThreeFingers', function(e) {
+					var touches = e.originalEvent.detail.touches;
+					gesture_text('Three Fingers!');
+					gesture_target(touches);
+				})
+				.on('tapFourFingers', function(e) {
+					var touches = e.originalEvent.detail.touches;
+					gesture_text('Four Fingers!');
+					gesture_target(touches);
+				})
+				.on('tapFiveFingers', function(e) {
+					var touches = e.originalEvent.detail.touches;
+					gesture_text('Five Fingers!');
+					gesture_target(touches);
+				})
+				.on('spread', function(e) {
+
+					gesture_text('Spread!');
+
+				})
+				.on('pinch', function(e) {
+					gesture_text('Pinch!');
+				})
+				.on('rotate', function(e) {
+					console.log(e);
+					var deg = parseInt(e.originalEvent.detail.rotation);
+					gesture_text('Rotate! ' + deg + '&deg;');
+				});
+		 });
+
+		function gesture_target( touches ) {
+			for ( i = 0; i < touches.length; i++ ) {
+				target = document.createElement('div');
+				target.className = 'target';
+				target.style.left = touches[i].pageX - 50;
+				target.style.top = touches[i].pageY - 50;
+
+				$('body').append(target);
+				$(target).show(function(){ $(this).fadeOut(1000); });
+
+			}
+		}
+
+		 function gesture_text( text ) {
+		 	$('#status')
+		 		.html(text)
+
+		 		.fadeIn(500, function(){ $('#status').fadeOut(500); });
+		 }
+		</script>
 		<style>
 			.target { 
-				width: 50px;
-				height: 50px;
+				width: 100px;
+				height: 100px;
 
 				background: #DFDFDF;
-				border-radius: 25px;
+				border-radius: 50px;
 				position: absolute;
+			}
+
+			#status { 
+				color: #BEBEBE;
+				font-family: Arial;
+				font-size: 5em;
+
+				font-weight:bold;
+
+				position: absolute;
+
+				top: 50%;
+				margin-top: -40px;
+
+				width: 100%;
+				text-align:center;
+
+				display: none;
 			}
 		</style>
 	</head>
